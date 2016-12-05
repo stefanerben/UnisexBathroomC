@@ -3,8 +3,6 @@
  * by Stefan Erben & Andreas Mattes 5BHEL
  */
 
-//Testcomment ob Gitintegration in IDE funktioniert
-
 #ifndef _REENTRANT
 #define _REENTRANT
 #endif
