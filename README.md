@@ -1,6 +1,6 @@
 # UnisexBathroomC
 
-##Aufgabenstellung##
+## Aufgabenstellung ##
 
 I wrote this problem when a friend of mine left her position teaching physics at Colby College and took a job at 
 Xerox. She was working in a cubicle in the basement of a concrete monolith, and the nearest women's bathroom was 
@@ -13,3 +13,7 @@ maintained:
 
 Of course the solution should avoid deadlock. For now, though, don't worry about starvation. You may assume that 
 the bathroom is equipped with all the semaphores you need. 
+
+## Entwickler ##
+Andreas Mattes & Stefan Erben 5BHEL
+HTL-Hollabrunn
