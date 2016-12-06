@@ -47,11 +47,11 @@ int main(int argc, char ** argv)
     else
     {
         maenner = atoi(argv[1]);
-        //TODO falls maenner mehr als Max zahl
+        if(maenner > MAXMAENNER) maenner = MAXMAENNER;      //Mehr Männer als MAXMAENNER Zahl?
 
         // TODO Fehlerabfrage ob es zuviele sind
         frauen = atoi(argv[2]);
-        //TODO falls maenner mehr als Max zahl
+        if(frauen > MAXFRAUEN) frauen = MAXFRAUEN;      //Mehr Frauen als MAXFRAUEN Zahl?
     }
 
     //threads parametrisieren
