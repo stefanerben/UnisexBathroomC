@@ -28,22 +28,23 @@ sem_t crit_sem, warten_maenner_sem, warten_frauen_sem; //verwendete Semaphoren
 int maenner_in, frauen_in, maenner_warten, frauen_warten;
 bool lassLeuterein;
 
-//ieviele Maenner und Frauen sollen reingehen
+//Wieviele Maenner und Frauen sollen reingehen
+//ToDo übergabe als Startparameter vom benutzer
 int maenner, frauen;
 
-// Main
+// Main, initialisiert Semaphoren und Counter
 int main(int argc, char ** argv)
 {
     pthread_attr_t attr;
     pthread_t personen[MAXMAENNER + MAXFRAUEN]; //Thread starten
     int index; //Zaehlvariable
 
-    if(argc < 3) // Fehlerabfrage TODO nochverbessern
+    if(argc < 3) // Fehlerabfrage ob inkorrekte Anzahl als Startargumente übergeben wurde
     {
         printf("ERROR. Falsche parametrisierung\n");
         return EXIT_FAILURE;
     }
-    // Maenner und Frauen aus Argumenten lesen 
+    // Maenner und Frauen aus Argumenten lesen und überprüfen ob diese im erlaubten Bereich gewählt wurden
     else
     {
         maenner = atoi(argv[1]);
@@ -96,32 +97,31 @@ void print_status()
 // MAENNER!
 void * male(void * input)
 {
-    int i; //Indexvariale
+    int i; //Indexvariale für Benachrichtigung der Männer
 
     // Maenner im Wartezimmer
     int maenner_inWarteschlange;
 
     // TODO alles einruecken
     
-    sleep(WAITTIME);    //Badezimmer wird verwendet
+    sleep(WAITTIME);    //Zeit wird simuliert während das Bad benutz wird/bis jemand ins Bad muss
 
     sem_wait(&crit_sem); //Critical section beginnt!
-    maenner_warten++; //ein Mann mehr wartet
+    maenner_warten++; //Anzahl der wartenden Männer erhöhen
 
-    // Ausgabe
+    // Status ausgeben
     printf("Maenner wollen ins Badezimmer.");
     print_status();
 
-    // Wenn grad frauen drin
+    // Wenn grad Frauen im Bad sind
     if(frauen_in > 0 || frauen_warten > 0)
     {
-        // Ausgabe
+        // Status ausgeben
         printf("Maenner warten dass sie dran kommen.");
         print_status();
 
         sem_post(&crit_sem);
         sem_wait(&warten_maenner_sem); // Warten bis Maenner drann sind/
-        // baton technique.
         
 
         // ein mann rein -> einer weniger im Wartezimmer
@@ -131,14 +131,15 @@ void * male(void * input)
         // jetzt wen reinlassen
         if(lassLeuterein == false)
         {
-            lassLeuterein = true;
+            lassLeuterein = true;   //Soll nur einmal passieren
 
             maenner_inWarteschlange = maenner_warten;
 
-            // Ausgabe
+            // Status ausgeben
             printf("Maenner sind dran, der erste geht hinein.");    // TODO \n1. Mann geht rein.
             print_status();
 
+            // Andere Maenner vom Warteraum reinlassen
             for(i = 0; i < maenner_inWarteschlange; i++)
             {
                 sem_post(&warten_maenner_sem);
@@ -149,7 +150,7 @@ void * male(void * input)
         }
         else
         {
-            // Ausgabe
+            // Status ausgeben
             printf("Mann betritt das Badezimmer." );  // TODO %d. ,maenner_in
             print_status();
         }
@@ -160,20 +161,20 @@ void * male(void * input)
         maenner_in++;
         maenner_warten--;
 
-          // Ausgabe
+          // Status ausgeben
         printf("Mann betritt das Badezimmer.\n");
         print_status();
     }
     sem_post(&crit_sem); //Ende der critical section.
 
-    // warten
+    // Zeit für Toilette simulieren
     sleep(WAITTIME);
 
     // badezimmer verlassen
     sem_wait(&crit_sem);    //critical section eginnt
     maenner_in--;         /* Ein mann geht raus */
 
-    /// Ausgabe
+    // Status ausgeben
     printf("Mann verlaesst das Badezimmer.");
     print_status();
 
@@ -186,9 +187,7 @@ void * male(void * input)
         printf("Letzter Mann hat das Badezimmer verlassen.");
         print_status();
         if(frauen_warten > 0)
-        {
             sem_post(&warten_frauen_sem);
-        }
         else
             sem_post(&crit_sem);
     }
@@ -204,33 +203,27 @@ void * male(void * input)
 void * female(void * input)
 {
     int i;
-    int frauen_inWarteschlange;
-
-    // alles formatieren ( buendig machen )
+    int frauen_inWarteschlange;     //Anzahl der Frauen in Warteschlange
     {
-        // warten
-        sleep(WAITTIME);
+        sleep(WAITTIME);        // Zeit für Toilettenbesuch simulieren
+        sem_wait(&crit_sem);    // Start der critical section.
+        frauen_warten++;        //Anzahl der wartenden Frauen erhöhen
 
-        // Start der critical section.
-        sem_wait(&crit_sem);
-
-        frauen_warten++;
-
-        //Ausgabe
+        // Status ausgeben
         printf("Frau will ins Badezimmer.");
         print_status();
 
         // sind gerade maenner drin?
         if(maenner_in > 0 || maenner_warten > 0)
         {
-             //Ausgabe
+            // Status ausgeben
             printf("Frauen warte dass sie dran sind.");
             print_status();
 
             sem_post(&crit_sem); //ende der critical section
             sem_wait(&warten_frauen_sem); // frauen warten dass sie dran sind
-            //baton technique. 
             
+            // Status aktualisieren
             frauen_in++;
             frauen_warten--;
 
@@ -241,7 +234,7 @@ void * female(void * input)
 
                 frauen_inWarteschlange = frauen_warten;
 
-                //Ausgabe
+                // Status ausgeben
                 printf("Frauen sind dran, die erste geht hinein.");
                 print_status();
 
