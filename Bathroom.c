@@ -48,11 +48,34 @@ int main(int argc, char ** argv)
     else
     {
         maenner = atoi(argv[1]);
-        if(maenner > MAXMAENNER) maenner = MAXMAENNER;      //Mehr Männer als MAXMAENNER Zahl?
+        if(maenner > MAXMAENNER) 
+        {
+            printf("\nSie haben eine zu grosse Anzahl eingeben!\nDie Anzahl der Maenner wurde auf die Maximalanzahl (%d) gesetzt!\n\n",MAXMAENNER);
+            maenner = MAXMAENNER;      //Mehr Männer als MAXMAENNER Zahl?
+        }
+        else if(maenner==0)
+        {
+            printf("\nSie haben eine zu kleine Anzahl eingeben!\nDie Anzahl der Maenner wurde auf die Mindestanzahl (1) gesetzt!\n\n");
+            maenner = 1;
+        }
 
-        // TODO Fehlerabfrage ob es zuviele sind
         frauen = atoi(argv[2]);
-        if(frauen > MAXFRAUEN) frauen = MAXFRAUEN;      //Mehr Frauen als MAXFRAUEN Zahl?
+        if(frauen > MAXFRAUEN)       //Mehr Frauen als MAXFRAUEN Zahl?
+        {
+            printf("\nSie haben eine zu grosse Anzahl eingeben!\nDie Anzahl der Frauen wurde auf die Maximalanzahl (%d) gesetzt!\n\n",MAXFRAUEN);
+            frauen = MAXFRAUEN;
+        }
+        else if(frauen==0)
+        {
+            printf("\nSie haben eine zu kleine Anzahl eingeben!\nDie Anzahl der Frauen wurde auf die Mindestanzahl (1) gesetzt!\n\n");
+            frauen = 1;
+        }
+
+        // TODO Augabe der eingegeben Informationen
+        printf("\n****************************************\n");
+        printf("* folgende Parameter werden verwendet: *\n");
+        printf("* Maenner: %d \t\t Frauen: %d     *\n",maenner,frauen);
+        printf("****************************************\n\n");
     }
 
     //threads parametrisieren
