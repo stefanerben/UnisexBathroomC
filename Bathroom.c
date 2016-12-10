@@ -93,7 +93,7 @@ int main(int argc, char ** argv)
     maenner_warten = 0;
     frauen_warten = 0;
 
-    lassLeuterein = false; //Niemanden reinlassen
+    lassLeuterein = false; //anfangs niemanden reinlassen
 
         for(index = 0; index < maenner; index++) // Maenner erstellen
         {
@@ -133,15 +133,15 @@ void * male(void * input)
     maenner_warten++; //Anzahl der wartenden Männer erhöhen
 
     // Status ausgeben
-    printf("Maenner wollen ins Badezimmer.");
+    printf("Mann will ins Badezimmer.");
     print_status();
 
     // Wenn grad Frauen im Bad sind
     if(frauen_in > 0 || frauen_warten > 0)
     {
         // Status ausgeben
-        printf("Maenner warten dass sie dran kommen.");
-        print_status();
+        printf("Maenner warten dass sie dran kommen.\n\n");
+        //print_status();
 
         sem_post(&crit_sem);
         sem_wait(&warten_maenner_sem); // Warten bis Maenner drann sind/
@@ -159,7 +159,7 @@ void * male(void * input)
             maenner_inWarteschlange = maenner_warten;
 
             // Status ausgeben
-            printf("Maenner sind dran, der erste geht hinein.");    // TODO \n1. Mann geht rein.
+            printf("Maenner sind dran.\n\n%d. Mann betritt das Badezimmer.",maenner_in);    // TODO \n1. Mann geht rein.
             print_status();
 
             // Andere Maenner vom Warteraum reinlassen
@@ -174,7 +174,7 @@ void * male(void * input)
         else
         {
             // Status ausgeben
-            printf("Mann betritt das Badezimmer." );  // TODO %d. ,maenner_in
+            printf("%d. Mann betritt das Badezimmer.",maenner_in );  // TODO %d. ,maenner_in
             print_status();
         }
 
@@ -198,7 +198,7 @@ void * male(void * input)
     maenner_in--;         /* Ein mann geht raus */
 
     // Status ausgeben
-    printf("Mann verlaesst das Badezimmer.");
+    printf("%d. Mann verlaesst das Badezimmer.",maenner_in+1);
     print_status();
 
     //Wenn der letzte mann rausgeht
@@ -207,8 +207,8 @@ void * male(void * input)
     if(maenner_in == 0)
     {
         // Ausgabe
-        printf("Letzter Mann hat das Badezimmer verlassen.");
-        print_status();
+        printf("Letzter Mann hat das Badezimmer verlassen.\n");
+        //print_status();
         if(frauen_warten > 0)
             sem_post(&warten_frauen_sem);
         else
@@ -240,8 +240,8 @@ void * female(void * input)
         if(maenner_in > 0 || maenner_warten > 0)
         {
             // Status ausgeben
-            printf("Frauen warte dass sie dran sind.");
-            print_status();
+            printf("Frauen warte dass sie dran sind.\n\n");
+            //print_status();
 
             sem_post(&crit_sem); //ende der critical section
             sem_wait(&warten_frauen_sem); // frauen warten dass sie dran sind
@@ -274,7 +274,7 @@ void * female(void * input)
             else
             {
                 //Ausgabe
-                printf("Frau betritt das Badezimmer.");
+                printf("%d. Frau betritt das Badezimmer.",frauen_in);
                 print_status();
             }
         }
@@ -282,7 +282,7 @@ void * female(void * input)
         {
                 frauen_in++;
                 frauen_warten--;
-                printf("Frau betritt das Badezimmer.");
+                printf("%d. Frau betritt das Badezimmer.",frauen_in);
                 print_status();
         }
         sem_post(&crit_sem); //ende der critical section
@@ -294,15 +294,15 @@ void * female(void * input)
         frauen_in--;       //eine Frau weniger
 
         //Ausgabe
-        printf("Frau verlaesst das Badezimmer.");
+        printf("%d. Frau verlaesst das Badezimmer.",frauen_in+1);
         print_status();
 
         //letzte Frau
         if(frauen_in == 0)
         {
             //Ausgabe
-            printf("Letzte Frau hat das Badezimmer verlassen.");
-            print_status();
+            printf("Letzte Frau hat das Badezimmer verlassen.\n\n");
+            //print_status();
 
             if(maenner_warten > 0)
                 sem_post(&warten_maenner_sem);
