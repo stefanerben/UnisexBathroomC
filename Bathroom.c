@@ -19,10 +19,10 @@
 #define MAXFRAUEN 5         //Wieviele Frauen duerfen rein
 #define WAITTIME 2          //Zeit im Bad und zwischen Badbesuche
 
-void * male(void * );       //maenner Methoden Deklaration
+void * male(void * );       //Maenner Methoden Deklaration
 void * female(void * );     //Frauen Methoden Deklaration
 
-sem_t crit_sem, warten_maenner_sem, warten_frauen_sem; //verwendete Semaphoren
+sem_t crit_sem, warten_maenner_sem, warten_frauen_sem; //Verwendete Semaphoren
 
 //Definition der Counter und bool wert ob noch wer rein darf
 int maenner_in, frauen_in, maenner_warten, frauen_warten;
@@ -64,7 +64,7 @@ int main(int argc, char * * argv) {
             frauen = 1;
         }
 
-        // TODO Augabe der eingegeben Informationen
+        //Ausgabe der eingegeben Informationen
         printf("\n****************************************\n");
         printf("* folgende Parameter werden verwendet: *\n");
         printf("* Maenner: %d \t\t Frauen: %d     *\n", maenner, frauen);
@@ -76,9 +76,9 @@ int main(int argc, char * * argv) {
     pthread_attr_setscope( & attr, PTHREAD_SCOPE_SYSTEM);
 
     //Semaphoren parametrisieren
-    sem_init( & crit_sem, 0, 1); //2. Argument 0 weil sem nicht geshared werden soll
-    sem_init( & warten_maenner_sem, 0, 0); //2. Argument 0 weil sem nicht geshared werden soll
-    sem_init( & warten_frauen_sem, 0, 0); //2. Argument 0 weil sem nicht geshared werden soll
+    sem_init( & crit_sem, 0, 1); //2. Argument 0 weil Semaphore nicht geshared werden soll
+    sem_init( & warten_maenner_sem, 0, 0); //2. Argument 0 weil Semaphore nicht geshared werden soll
+    sem_init( & warten_frauen_sem, 0, 0); //2. Argument 0 weil Semaphore nicht geshared werden soll
 
     //Counter initialiseren
     maenner_in = 0;
@@ -104,13 +104,13 @@ int main(int argc, char * * argv) {
 
 // Gibt den derzeitigen Status aus, also wievile sind im Wartezimmer und wieviele in Bad?
 void print_status() {
-    //Ausgabe
+    // Status ausgeben
     printf("\nIm Bad:\t\t M=%d, F=%d.\nEs warten:\t M=%d, F=%d.\n\n", maenner_in, frauen_in, maenner_warten, frauen_warten);
 }
 
 // MAENNER!
 void * male(void * input) {
-    int i; //Indexvariale für Benachrichtigung der Männer
+    int i; //Indexvariable für Benachrichtigung der Männer
 
     // Maenner im Wartezimmer
     int maenner_inWarteschlange;
@@ -124,7 +124,7 @@ void * male(void * input) {
     printf("Mann will ins Badezimmer.");
     print_status();
 
-    // Wenn grad Frauen im Bad sind
+    // Wenn grad Frauen im Bad sind oder warten
     if (frauen_in > 0 || frauen_warten > 0) {
         // Status ausgeben
         printf("Maenner warten dass sie dran kommen.\n\n");
@@ -144,7 +144,7 @@ void * male(void * input) {
             maenner_inWarteschlange = maenner_warten;
 
             // Status ausgeben
-            printf("Maenner sind dran.\n\n%d. Mann betritt das Badezimmer.", maenner_in); // TODO \n1. Mann geht rein.
+            printf("Maenner sind dran.\n\n%d. Mann betritt das Badezimmer.", maenner_in);
             print_status();
 
             // Andere Maenner vom Warteraum reinlassen
@@ -152,14 +152,14 @@ void * male(void * input) {
                 sem_post( & warten_maenner_sem);
                 sem_wait( & crit_sem);
             }
-            // Maenner reinlassen ist ageschlossen
+            // Keine Männer mehr reinlassen
             lassLeuterein = false;
         } else {
             // Status ausgeben
-            printf("%d. Mann betritt das Badezimmer.", maenner_in); // TODO %d. ,maenner_in
+            printf("%d. Mann betritt das Badezimmer.", maenner_in);
             print_status();
         }
-    } else // wenn maenner bereits drin
+    } else // Wenn maenner bereits drin
     {
         maenner_in++;
         maenner_warten--;
@@ -173,8 +173,8 @@ void * male(void * input) {
     // Zeit für Toilette simulieren
     sleep(WAITTIME);
 
-    // badezimmer verlassen
-    sem_wait( & crit_sem); //critical section eginnt
+    // Badezimmer verlassen
+    sem_wait( & crit_sem); // Critical section eginnt
     maenner_in--; /* Ein mann geht raus */
 
     // Status ausgeben
@@ -183,7 +183,6 @@ void * male(void * input) {
 
     //Wenn der letzte mann rausgeht
 
-    //TODO dass der letzte das Bad verlassen hat
     if (maenner_in == 0) {
         // Ausgabe
         printf("Letzter Mann hat das Badezimmer verlassen.\n");
@@ -200,7 +199,7 @@ void * male(void * input) {
 }
 
 // FRAUEN
-// gleich wie maenner
+// Prinzipiell gleich wie maenner
 void * female(void * input) {
     int i;
     int frauen_inWarteschlange; //Anzahl der Frauen in Warteschlange
@@ -217,7 +216,6 @@ void * female(void * input) {
         if (maenner_in > 0 || maenner_warten > 0) {
             // Status ausgeben
             printf("Frauen warte dass sie dran sind.\n\n");
-            //print_status();
 
             sem_post( & crit_sem); //ende der critical section
             sem_wait( & warten_frauen_sem); // frauen warten dass sie dran sind
