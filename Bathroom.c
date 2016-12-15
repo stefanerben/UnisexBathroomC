@@ -55,7 +55,7 @@ int main(int argc, char * * argv) {
         }
 
         frauen = atoi(argv[2]);
-        if (frauen > MAXFRAUEN) //Mehr Frauen als MAXFRAUEN Zahl?
+        if (frauen > MAXFRAUEN) //Mehr Frauen als MAXFRAUEN Zahl -> Frauen auf Max setze
         {
             printf("\nSie haben eine zu grosse Anzahl eingeben!\nDie Anzahl der Frauen wurde auf die Maximalanzahl (%d) gesetzt!\n\n", MAXFRAUEN);
             frauen = MAXFRAUEN;
@@ -76,9 +76,9 @@ int main(int argc, char * * argv) {
     pthread_attr_setscope( & attr, PTHREAD_SCOPE_SYSTEM);
 
     //Semaphoren parametrisieren
-    sem_init( & crit_sem, 0, 1); //2. Argument 0 weil Semaphore nicht geshared werden soll
-    sem_init( & warten_maenner_sem, 0, 0); //2. Argument 0 weil Semaphore nicht geshared werden soll
-    sem_init( & warten_frauen_sem, 0, 0); //2. Argument 0 weil Semaphore nicht geshared werden soll
+    sem_init( & crit_sem, 0, 1); //Argument 0 weil Semaphore nicht geshared werden soll
+    sem_init( & warten_maenner_sem, 0, 0); //Argument 0 weil Semaphore nicht geshared werden soll
+    sem_init( & warten_frauen_sem, 0, 0); //Argument 0 weil Semaphore nicht geshared werden soll
 
     //Counter initialiseren
     maenner_in = 0;
